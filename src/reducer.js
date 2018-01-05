@@ -8,40 +8,49 @@ import {
 } from './actionTypes'
 
 /* return reducers and selectors on a per realm basis */
-const reducerFactory = realm => {
-  const initialState = {
-    authenticator: null,
-    hasFailedAuth: false,
-    isAuthenticated: false,
-    isRestored: false,
-    lastError: null,
-    data: {}
-  }
+const initialState = {
+  authenticator: null,
+  hasFailedAuth: false,
+  isAuthenticated: false,
+  isRestored: false,
+  lastError: null,
+  data: {}
+}
 
-  const reducer = (state = initialState, action) => {
-    switch (action.type) {
-      case INITIALIZE:
-        const {
-          authenticated: { authenticator, ...data } = {}
-        } = action.payload
+// TODO: need to push all of these things one deeper.
+const reducer = (state = initialState, action) => {
+  const { realm = 'defaults' } = action.meta
+  switch (action.type) {
+    case INITIALIZE:
+      const {
+        payload: { authenticated: { authenticator, ...data } = {} }
+      } = action
 
-        return {
-          ...initialState,
+      return {
+        ...initialState,
+        [realm]: {
+          ...initialState[realm],
           authenticator,
           data
         }
-      case `${realm}/${AUTHENTICATE_SUCCEEDED}`:
-        return {
-          ...state,
+      }
+    case AUTHENTICATE_SUCCEEDED:
+      return {
+        ...state,
+        [realm]: {
+          ...state[realm],
           hasFailedAuth: false,
           authenticator: action.meta.authenticator,
           isAuthenticated: true,
           data: action.payload,
           lastError: null
         }
-      case `${realm}/${AUTHENTICATE_FAILED}`:
-        return {
-          ...state,
+      }
+    case AUTHENTICATE_FAILED:
+      return {
+        ...state,
+        [realm]: {
+          ...state[realm],
           authenticator: null,
           hasFailedAuth: true,
           isAuthenticated: false,
@@ -49,21 +58,26 @@ const reducerFactory = realm => {
           lastError: action.payload,
           data: {}
         }
-      case `${realm}/${INVALIDATE_SESSION}`:
-      case `${realm}/${RESTORE_FAILED}`:
-        return {
-          ...state,
+      }
+    case INVALIDATE_SESSION:
+    case RESTORE_FAILED:
+      return {
+        ...state,
+        [realm]: {
+          ...state[realm],
           authenticator: null,
           isAuthenticated: false,
           isRestored: true,
           lastError: null,
           data: {}
         }
-      case `${realm}/${RESTORE}`: {
-        const { authenticator, ...data } = action.payload
-
-        return {
-          ...state,
+      }
+    case RESTORE: {
+      const { authenticator, ...data } = action.payload
+      return {
+        ...state,
+        [realm]: {
+          ...state[realm],
           authenticator,
           data,
           isAuthenticated: true,
@@ -71,24 +85,17 @@ const reducerFactory = realm => {
           lastError: null
         }
       }
-      default:
-        return state
     }
-  }
-
-  const selectors = {
-    getData: state => state[realm].data,
-    getIsAuthenticated: state => state[realm].isAuthenticated,
-    getAuthenticator: state => state[realm].authenticator,
-    getIsRestored: state => state[realm].isRestored,
-    getLastError: state => state[realm].lastError,
-    getHasFailedAuth: state => state[realm].hasFailedAuth
-  }
-
-  return {
-    reducer,
-    selectors
+    default:
+      return state
   }
 }
 
-export default reducerFactory
+export const getData = (state, realm) => state[realm].data
+export const getIsAuthenticated = (state, realm) => state[realm].isAuthenticated
+export const getAuthenticator = (state, realm) => state[realm].authenticator
+export const getIsRestored = (state, realm) => state[realm].isRestored
+export const getLastError = (state, realm) => state[realm].lastError
+export const getHasFailedAuth = (state, realm) => state[realm].hasFailedAuth
+
+export default reducer

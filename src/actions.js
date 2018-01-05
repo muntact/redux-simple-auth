@@ -9,20 +9,21 @@ import {
   RESTORE_FAILED
 } from './actionTypes'
 
-export const authenticate = (authenticator, payload) => ({
+export const authenticate = (realm, authenticator, payload) => ({
   type: AUTHENTICATE,
-  meta: { authenticator },
+  meta: { authenticator, realm },
   payload
 })
 
-export const authenticateSucceeded = (authenticator, payload) => ({
+export const authenticateSucceeded = (realm, authenticator, payload) => ({
   type: AUTHENTICATE_SUCCEEDED,
-  meta: { authenticator },
+  meta: { authenticator, realm },
   payload
 })
 
-export const authenticateFailed = payload => ({
+export const authenticateFailed = (realm, payload) => ({
   type: AUTHENTICATE_FAILED,
+  meta: { realm },
   payload
 })
 
@@ -31,20 +32,25 @@ export const fetch = (url, options) => ({
   payload: { url, options }
 })
 
-export const invalidateSession = () => ({
-  type: INVALIDATE_SESSION
+// TODO: make this pluralized, because that is how it acts?
+export const invalidateSession = realm => ({
+  type: INVALIDATE_SESSION,
+  meta: { realm }
 })
 
-export const restore = payload => ({
+export const restore = (realm, payload) => ({
   type: RESTORE,
+  meta: { realm },
   payload
 })
 
-export const restoreFailed = () => ({
-  type: RESTORE_FAILED
+export const restoreFailed = realm => ({
+  type: RESTORE_FAILED,
+  meta: { realm }
 })
 
-export const initialize = payload => ({
+export const initialize = (realm, payload) => ({
   type: INITIALIZE,
+  meta: { realm },
   payload
 })

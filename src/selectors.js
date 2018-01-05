@@ -1,16 +1,19 @@
 import * as fromSession from './reducer'
 
-export const getSessionData = state => fromSession.getData(state.session)
+export const getRealmSessionData = (state, realm) =>
+  fromSession.getData(state.session, realm)
 
-export const getIsAuthenticated = state =>
-  fromSession.getIsAuthenticated(state.session)
+export const getRealmIsAuthenticated = (state, realm) =>
+  fromSession.getIsAuthenticated(state.session, realm)
 
-export const getAuthenticator = state =>
-  fromSession.getAuthenticator(state.session)
+export const getRealmAuthenticator = (state, realm) =>
+  fromSession.getAuthenticator(state.session, realm)
 
-export const getIsRestored = state => fromSession.getIsRestored(state.session)
+export const getRealmIsRestored = (state, realm) =>
+  fromSession.getIsRestored(state.session, realm)
 
-export const getLastError = state => fromSession.getLastError(state.session)
+export const getRealmLastError = (state, realm) =>
+  fromSession.getLastError(state.session, realm)
 
-export const getHasFailedAuth = state =>
-  fromSession.getHasFailedAuth(state.session)
+export const getRealmHasFailedAuth = (state, realm) =>
+  fromSession.getHasFailedAuth(state.session, realm)

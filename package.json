@@ -65,7 +65,8 @@
   },
   "dependencies": {
     "js-cookie": "^2.1.4",
-    "lodash.isplainobject": "^4.0.6"
+    "lodash.isplainobject": "^4.0.6",
+    "parse-domain": "^2.0.0"
   },
   "jest": {
     "setupFiles": [

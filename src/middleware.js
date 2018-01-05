@@ -1,5 +1,7 @@
 import defaultStorage from './storage/default'
-import isPlainObject from 'lodash.isplainobject'
+import { validateConfig } from './validators'
+import parseDomain from 'parse-domain'
+
 import { AUTHENTICATE, FETCH } from './actionTypes'
 import {
   authenticateFailed,
@@ -9,97 +11,79 @@ import {
   restoreFailed
 } from './actions'
 
-const validateAuthenticatorsPresence = ({ authenticator, authenticators }) => {
-  if (authenticator == null && authenticators == null) {
-    throw new Error(
-      'No authenticator was given. Be sure to configure an authenticator ' +
-        'by using the `authenticator` option for a single authenticator or ' +
-        'using the `authenticators` option to allow multiple authenticators'
-    )
+export default (realms = {}) => {
+  Object.keys(realms).forEach(realmName =>
+    validateConfig(realmName, realms[realmName])
+  )
+
+  const findAuthenticator = (realmName, authenticatorName) => {
+    const { authenticator, authenticators } = realms[realmName]
+    return authenticator
+      ? () => authenticator
+      : authenticatorName =>
+          authenticators.find(
+            authenticator => authenticator.name === authenticatorName
+          )
   }
-}
-
-const validateAuthenticatorsIsArray = authenticators => {
-  if (!Array.isArray(authenticators)) {
-    throw new Error(
-      'Expected `authenticators` to be an array. If you only need a single ' +
-        'authenticator, consider using the `authenticator` option.'
-    )
-  }
-}
-
-const validateAuthenticatorIsObject = authenticator => {
-  if (!isPlainObject(authenticator)) {
-    throw new Error(
-      'Expected `authenticator` to be an object. If you need multiple ' +
-        'authenticators, consider using the `authenticators` option.'
-    )
-  }
-}
-
-const validateConfig = config => {
-  const { authenticator, authenticators } = config
-
-  validateAuthenticatorsPresence(config)
-  authenticator == null && validateAuthenticatorsIsArray(authenticators)
-  authenticators == null && validateAuthenticatorIsObject(authenticator)
-}
-
-export default (config = {}) => {
-  validateConfig(config)
-
-  const {
-    authenticator,
-    authenticators,
-    authorize,
-    storage = defaultStorage
-  } = config
-
-  const findAuthenticator = authenticator
-    ? () => authenticator
-    : name => authenticators.find(authenticator => authenticator.name === name)
 
   return ({ dispatch, getState }) => {
-    const { authenticated = {} } = storage.restore() || {}
-    const { authenticator: authenticatorName, ...data } = authenticated
-    const authenticator = findAuthenticator(authenticatorName)
+    Object.keys(realms).forEach(realmName => {
+      const config = realms[realmName]
+      config.storage = config.storage || defaultStorage
+      const { authenticated = {} } = config.storage.restore() || {}
+      const { authenticator: authenticatorName, ...data } = authenticated
+      const authenticator = findAuthenticator(realmName, authenticatorName)
 
-    if (authenticator) {
-      authenticator
-        .restore(data)
-        .then(
-          () => dispatch(restore(authenticated)),
-          () => dispatch(restoreFailed())
-        )
-    }
+      if (authenticator) {
+        authenticator
+          .restore(data)
+          .then(
+            () => dispatch(restore(authenticated)),
+            () => dispatch(restoreFailed())
+          )
+      }
+    })
 
     return next => action => {
       switch (action.type) {
         case AUTHENTICATE: {
-          const authenticator = findAuthenticator(action.meta.authenticator)
+          const {
+            meta: { realm, authenticator: authenticatorr },
+            payload
+          } = action
+          const authenticator = findAuthenticator(realm, authenticatorr)
 
           if (!authenticator) {
             throw new Error(
-              `No authenticator with name \`${action.meta.authenticator}\` ` +
+              `No authenticator with name \`${authenticator}\` in the realm: \`${realm}\`` +
                 'was found. Be sure you have defined it in the authenticators ' +
                 'config.'
             )
           }
 
           return authenticator
-            .authenticate(action.payload)
+            .authenticate(payload)
             .then(
-              data => dispatch(authenticateSucceeded(authenticator.name, data)),
-              error => dispatch(authenticateFailed(error))
+              data =>
+                dispatch(
+                  authenticateSucceeded(realm, authenticator.name, data)
+                ),
+              error => dispatch(authenticateFailed(realm, error))
             )
         }
         case FETCH: {
-          const { session } = getState()
           const { url, options = {} } = action.payload
           const { headers = {} } = options
 
+          // TODO: find a better thing than parseDomain :(. its 69k gzipped.
+          const { subdomain, domain } = parseDomain(url)
+          const matchingRealm = realms[`${subdomain}${domain}`]
+          const session = getState().session[matchingRealm]
+
+          const authorize = matchingRealm ? matchingRealm.authorize : false
+
           if (authorize) {
-            authorize(session.data, (name, value) => {
+            matchingRealm.authorize(session.data, (name, value) => {
               headers[name] = value
             })
           }
@@ -117,11 +101,16 @@ export default (config = {}) => {
           next(action)
           const { session } = getState()
 
-          if (session.data !== prevSession.data) {
-            const { authenticator, data } = session
-
-            storage.persist({ authenticated: { ...data, authenticator } })
-          }
+          Object.keys(session).forEach(realmName => {
+            const realmSession = session[realmName]
+            if (realmSession.data !== prevSession[realmName].data) {
+              // need to grab all the values out of session...
+              const { authenticator, data } = realmSession
+              realms[realmName].storage.persist({
+                authenticated: { ...data, authenticator }
+              })
+            }
+          })
         }
       }
     }

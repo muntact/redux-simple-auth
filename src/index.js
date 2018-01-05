@@ -11,12 +11,12 @@ export { default as createCookieStore } from './storage/cookie'
 export { default as getInitialAuthState } from './enhancer'
 export { default as storage } from './storage/default'
 export {
-  getSessionData,
-  getIsAuthenticated,
-  getAuthenticator,
-  getIsRestored,
-  getLastError,
-  getHasFailedAuth
+  getRealmSessionData,
+  getRealmIsAuthenticated,
+  getRealmAuthenticator,
+  getRealmIsRestored,
+  getRealmLastError,
+  getRealmHasFailedAuth
 } from './selectors'
 
 export const actionTypes = _actionTypes

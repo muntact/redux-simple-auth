@@ -1,22 +1,21 @@
-import isPlainObject from 'lodash.isplainobject'
 import { initialize } from './actions'
+import { validateStorage, validateConfig } from './validators'
 import reducer from './reducer'
 
-const validateStorage = storage => {
-  if (!isPlainObject(storage) || storage.restore == null) {
-    throw new Error(
-      'Expected `storage` to be a valid storage. You either forgot to ' +
-        'include it or you passed an invalid storage object'
-    )
-  }
-}
-
-const enhancer = ({ storage } = {}) => {
+const enhancer = ({ storage, configs } = {}) => {
   validateStorage(storage)
+  Object.keys(configs).forEach(realmName =>
+    validateConfig(realmName, configs[realmName])
+  )
 
   return createStore => (rootReducer, preloadedState, enhancer) => {
+    const session = Object.keys(configs).reduce((acc, realmName) => {
+      acc[realmName] = reducer(null, initialize(realmName, storage.restore()))
+      return acc
+    }, {})
+
     const initialState = {
-      session: reducer(null, initialize(storage.restore())),
+      session,
       ...preloadedState
     }
 
