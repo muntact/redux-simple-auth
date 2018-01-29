@@ -12,8 +12,9 @@
     "build:commonjs:watch": "yarn run build:commonjs -- --watch",
     "build": "yarn run build:commonjs",
     "build:watch": "yarn run build:commonjs:watch",
+    "flow": "flow; test $? -eq 0 -o $? -eq 2",
     "precommit": "lint-staged",
-    "prepublish": "yarn run clean && yarn run lint && yarn run test && yarn run build"
+    "prepublish": "yarn run clean && yarn run lint && yarn run flow && yarn run test && yarn run build"
   },
   "lint-staged": {
     "*.js": [
@@ -45,6 +46,7 @@
     "babel-cli": "^6.24.1",
     "babel-eslint": "^7.2.3",
     "babel-jest": "^20.0.3",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-preset-env": "^1.5.0",
     "eslint": "^3.19.0",
@@ -53,6 +55,7 @@
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jsx-a11y": "^5.0.3",
     "eslint-plugin-react": "^7.0.1",
+    "flow-bin": "^0.64.0",
     "husky": "^0.13.3",
     "jest": "^20.0.3",
     "jest-fetch-mock": "^1.1.1",
