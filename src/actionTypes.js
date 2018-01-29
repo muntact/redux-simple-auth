@@ -1,3 +1,4 @@
+/** @flow*/
 const prefix = '@@redux-simple-auth'
 
 export const AUTHENTICATE = `${prefix}/AUTHENTICATE`

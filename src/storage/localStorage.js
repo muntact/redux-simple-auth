@@ -1,8 +1,21 @@
+/** @flow*/
+import type { PersistedData, StorageInstanceArgs } from '../flow-types'
+
 const DEFAULT_KEY = 'redux-simple-auth-session'
 
-export default ({ key = DEFAULT_KEY } = {}) => ({
-  persist: data => {
+const createLocalStorageStore = ({
+  key = DEFAULT_KEY
+}: StorageInstanceArgs = {}) => ({
+  persist: (data: PersistedData) => {
     localStorage.setItem(key, JSON.stringify(data || {}))
   },
-  restore: () => JSON.parse(localStorage.getItem(key)) || {}
+  restore: () => {
+    const localData = localStorage.getItem(key)
+    if (localData) {
+      return JSON.parse(localData)
+    }
+    return {}
+  }
 })
+
+export default createLocalStorageStore

@@ -1,10 +1,11 @@
-export default (
-  {
-    name,
-    restore = () => Promise.reject(),
-    authenticate = () => Promise.reject()
-  } = {}
-) => {
+/** @flow*/
+import type { Authenticator } from './flow-types'
+
+export default ({
+  name,
+  restore = (): Promise<void> => Promise.reject(),
+  authenticate = (): Promise<void> => Promise.reject()
+}: Authenticator = {}) => {
   if (name == null) {
     throw new Error('Authenticators must define a `name` property')
   }

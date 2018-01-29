@@ -1,6 +1,10 @@
+/** @flow*/
 import isPlainObject from 'lodash.isplainobject'
 import { initialize } from './actions'
-import reducer from './reducer'
+import reducer, { initialState as reducerInitialState } from './reducer'
+
+import type { StoreEnhancer } from 'redux'
+import type { Store, EnhancerArgs } from './flow-types'
 
 const validateStorage = storage => {
   if (!isPlainObject(storage) || storage.restore == null) {
@@ -11,17 +15,24 @@ const validateStorage = storage => {
   }
 }
 
-const enhancer = ({ storage } = {}) => {
+const enhancer = ({ storage }: EnhancerArgs = {}) => {
   validateStorage(storage)
 
-  return createStore => (rootReducer, preloadedState, enhancer) => {
+  const storeEnhancer: StoreEnhancer<*, *> = createStore => (
+    rootReducer,
+    preloadedState,
+    enhancer
+  ): Store => {
+    // $FlowFixMe: wtf does the error here even mean :S ?
     const initialState = {
-      session: reducer(null, initialize(storage.restore())),
+      session: reducer(reducerInitialState, initialize(storage.restore())),
       ...preloadedState
     }
 
     return createStore(rootReducer, initialState, enhancer)
   }
+
+  return storeEnhancer
 }
 
 export default enhancer

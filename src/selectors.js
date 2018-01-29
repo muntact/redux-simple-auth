@@ -1,16 +1,26 @@
+/** @flow*/
 import * as fromSession from './reducer'
 
-export const getSessionData = state => fromSession.getData(state.session)
+import type { AuthState } from './flow-types'
 
-export const getIsAuthenticated = state =>
+type selectorState = {
+  session: AuthState
+}
+
+export const getSessionData = (state: selectorState) =>
+  fromSession.getData(state.session)
+
+export const getIsAuthenticated = (state: selectorState) =>
   fromSession.getIsAuthenticated(state.session)
 
-export const getAuthenticator = state =>
+export const getAuthenticator = (state: selectorState) =>
   fromSession.getAuthenticator(state.session)
 
-export const getIsRestored = state => fromSession.getIsRestored(state.session)
+export const getIsRestored = (state: selectorState) =>
+  fromSession.getIsRestored(state.session)
 
-export const getLastError = state => fromSession.getLastError(state.session)
+export const getLastError = (state: selectorState) =>
+  fromSession.getLastError(state.session)
 
-export const getHasFailedAuth = state =>
+export const getHasFailedAuth = (state: selectorState) =>
   fromSession.getHasFailedAuth(state.session)

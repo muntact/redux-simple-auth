@@ -1,3 +1,4 @@
+/** @flow*/
 import * as _actionTypes from './actionTypes'
 
 export { default as createAuthMiddleware } from './middleware'

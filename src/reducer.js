@@ -1,3 +1,4 @@
+/** @flow*/
 import {
   AUTHENTICATE_FAILED,
   AUTHENTICATE_SUCCEEDED,
@@ -7,7 +8,9 @@ import {
   RESTORE_FAILED
 } from './actionTypes'
 
-const initialState = {
+import type { Action, AuthState } from './flow-types'
+
+export const initialState = {
   authenticator: null,
   hasFailedAuth: false,
   isAuthenticated: false,
@@ -16,7 +19,10 @@ const initialState = {
   data: {}
 }
 
-const reducer = (state = initialState, action) => {
+const reducer = (
+  state: AuthState = initialState,
+  action: Action
+): AuthState => {
   switch (action.type) {
     case INITIALIZE:
       const { authenticated: { authenticator, ...data } = {} } = action.payload
@@ -30,7 +36,8 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         hasFailedAuth: false,
-        authenticator: action.meta.authenticator,
+        // satisfying flow...
+        authenticator: action.meta && action.meta.authenticator,
         isAuthenticated: true,
         data: action.payload,
         lastError: null
@@ -74,9 +81,9 @@ const reducer = (state = initialState, action) => {
 
 export default reducer
 
-export const getData = state => state.data
-export const getIsAuthenticated = state => state.isAuthenticated
-export const getAuthenticator = state => state.authenticator
-export const getIsRestored = state => state.isRestored
-export const getLastError = state => state.lastError
-export const getHasFailedAuth = state => state.hasFailedAuth
+export const getData = (state: AuthState) => state.data
+export const getIsAuthenticated = (state: AuthState) => state.isAuthenticated
+export const getAuthenticator = (state: AuthState) => state.authenticator
+export const getIsRestored = (state: AuthState) => state.isRestored
+export const getLastError = (state: AuthState) => state.lastError
+export const getHasFailedAuth = (state: AuthState) => state.hasFailedAuth
