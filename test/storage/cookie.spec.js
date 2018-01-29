@@ -12,7 +12,7 @@ describe('cookie store', () => {
       expect(spy).toHaveBeenCalledWith(
         'redux-simple-auth-session',
         { key: 'value' },
-        { domain: null, expires: null, path: '/', secure: false }
+        { domain: undefined, expires: undefined, path: '/', secure: false }
       )
     })
 
@@ -25,7 +25,7 @@ describe('cookie store', () => {
       expect(spy).toHaveBeenCalledWith(
         'my-cookie-session',
         { key: 'value' },
-        { domain: null, expires: null, path: '/', secure: false }
+        { domain: undefined, expires: undefined, path: '/', secure: false }
       )
     })
 
@@ -38,7 +38,12 @@ describe('cookie store', () => {
       expect(spy).toHaveBeenCalledWith(
         'redux-simple-auth-session',
         { key: 'value' },
-        { domain: null, expires: null, path: '/hello-world', secure: false }
+        {
+          domain: undefined,
+          expires: undefined,
+          path: '/hello-world',
+          secure: false
+        }
       )
     })
 
@@ -51,7 +56,7 @@ describe('cookie store', () => {
       expect(spy).toHaveBeenCalledWith(
         'redux-simple-auth-session',
         { key: 'value' },
-        { domain: 'domain.com', expires: null, path: '/', secure: false }
+        { domain: 'domain.com', expires: undefined, path: '/', secure: false }
       )
     })
 
@@ -64,7 +69,7 @@ describe('cookie store', () => {
       expect(spy).toHaveBeenCalledWith(
         'redux-simple-auth-session',
         { key: 'value' },
-        { domain: null, expires: null, path: '/', secure: true }
+        { domain: undefined, expires: undefined, path: '/', secure: true }
       )
     })
 
@@ -81,7 +86,7 @@ describe('cookie store', () => {
       expect(spy).toHaveBeenCalledWith(
         'redux-simple-auth-session',
         { key: 'value' },
-        { domain: null, expires: expectedDate, path: '/', secure: false }
+        { domain: undefined, expires: expectedDate, path: '/', secure: false }
       )
 
       Date.now = nativeNow
