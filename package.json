@@ -3,7 +3,11 @@
   "workspaces": [
     "packages/*"
   ],
+  "scripts": {
+    "precommit": "lerna run --concurrency 1 --stream precommit"
+  },
   "devDependencies": {
-    "lerna": "2.4.0"
+    "lerna": "2.4.0",
+    "husky": "^0.13.3"        
   }
 }

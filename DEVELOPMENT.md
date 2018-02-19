@@ -33,10 +33,12 @@ As far as i can tell, using yarn workspaces is still an alpha feature (there
 isn't that much documentation around it's usage), so the following is a list
 of resources that i referred to when combining workspaces with lerna:
 
-* Example repo [Yarn with Lerna]
+* Example repo for [Yarn with Lerna]
+* Example repo for [Lerna and lint-staged] 
 
 
 [Yarn Workspaces]: https://yarnpkg.com/lang/en/docs/workspaces/
 [Lerna]: https://github.com/lerna/lerna
 [`redux-simple-auth`]: https://github.com/jerelmiller/redux-simple-auth/blob/master/packages/redux-simple-auth/README.md
 [Yarn with Lerna]: https://github.com/Quramy/lerna-yarn-workspaces-example
+[Lerna with lint-staged]: https://github.com/sudo-suhas/lint-staged-multi-pkg
