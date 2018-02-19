@@ -53,7 +53,7 @@ yarn add redux-simple-auth
 
 ## Development
 
-If you're trying to develop with this package check out the [development](https://github.com/jerelmiller/redux-simple-auth/blob/master/DEVELOPMENT.md)
+If you're trying to develop with this package check out the [development](./DEVELOPMENT.md)
 docs for environment setup information.
 
 ## Usage

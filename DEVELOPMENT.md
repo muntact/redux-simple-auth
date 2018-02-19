@@ -39,6 +39,6 @@ of resources that i referred to when combining workspaces with lerna:
 
 [Yarn Workspaces]: https://yarnpkg.com/lang/en/docs/workspaces/
 [Lerna]: https://github.com/lerna/lerna
-[`redux-simple-auth`]: https://github.com/jerelmiller/redux-simple-auth/blob/master/packages/redux-simple-auth/README.md
+[`redux-simple-auth`]: ./packages/redux-simple-auth/README.md
 [Yarn with Lerna]: https://github.com/Quramy/lerna-yarn-workspaces-example
 [Lerna with lint-staged]: https://github.com/sudo-suhas/lint-staged-multi-pkg
